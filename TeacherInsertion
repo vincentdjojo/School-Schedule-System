@@ -1,0 +1,40 @@
+<html>
+<body>
+<center>
+<h2>Add a Teacher</h2>
+</center>
+<form action="TeacherInsertion2.php" method="post">
+<table align="center">
+	<tr>
+		<td>
+			TeacherID:
+	 	</td>	
+	 	<td>
+	 		<input type="text" name="ClassID"><br>
+		</td>
+		<td>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			TeacherName:
+		</td>
+		<td>	
+		 <input type="text" name="ClassName"><br>
+		</td>
+		<td>
+		</td>
+	</tr>
+	<tr>
+		<td>	
+			<input type="submit">
+		</td>
+		<td>
+			<a href="InsertionMenu.php"><button type="button">Return</button></a>		
+		</td>
+	</tr>
+</form>
+</table>
+
+</body>
+</html>

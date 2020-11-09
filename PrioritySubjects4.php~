@@ -1,0 +1,306 @@
+<?php
+		session_start();
+		$ClassID=$_SESSION['ClassID'];	
+
+		$user_name = "root";
+		$pass_word = "";
+		$database = "schoolschedule";
+		$server = "127.0.0.1";
+		
+		$db_handle = mysql_connect($server,$user_name,$pass_word);
+		$db_found = mysql_select_db($database,$db_handle);			
+	
+		$PrioritySubject=$_POST['PrioritySubject'];
+		$PeriodTime=$_POST['PeriodTime'];
+		$PeriodDay=$_POST['PeriodDay'];
+		$DayPeriods=$_POST['Periods']; //Number of periods on that particular day
+		$OverlapError='';
+		$ErrorMessage='';			
+			
+   	$SQLPeriods = "SELECT * FROM assignment WHERE SubjectID='$PrioritySubject' AND ClassID='$ClassID'";
+   		$PeriodsResult = mysql_query($SQLPeriods);
+   	
+   	while($db_field=mysql_fetch_assoc($PeriodsResult)) {
+			$TeacherID=$db_field['TeacherID'];
+			$SubjectID=$db_field['SubjectID'];   		
+   		$Periods=$db_field['Periods'];
+   		$MergeInfo=$db_field['MergeInfo'];
+   		$IsFirstSubjectParallel=$db_field['IsFirstSubjectParallel'];
+   		$IsSubjectForAllClasses=$db_field['IsSubjectForAllClasses'];
+   	}	
+
+
+		//${$ClassID}=$_SESSION["$ClassID"];
+		//$Classes=$_SESSION["Classes"];	
+		
+		for ($time=1;$time<17;$time++) {
+     		for($day=1;$day<6;$day++){
+              $TimeTable[$time][$day]="";
+			}
+		}
+					
+		//$Count=1;
+		//$_SESSION["Count"]=$Count;
+		//$Classes[$Count]=$ClassID; /* Store class name in an Array called 'Classes' */
+		//$_SESSION["Classes"]=$Classes[$Count];		
+
+		//$SQLclass = "SELECT * FROM assignment WHERE PeriodTime='$PeriodTime' AND PeriodDay='$PeriodDay' AND ClassID='$ClassID' OR IsSubjectForAllClasses='1'";
+   		//$ParallelSubjectResult = mysql_query($SQLclass);
+
+ 		
+		$SQLCheck = "SELECT * FROM periodassignment WHERE (PeriodTime = '$PeriodTime' AND PeriodDay='$PeriodDay' AND ClassID='$ClassID') OR (PeriodTime = '$PeriodTime' AND PeriodDay='$PeriodDay' AND ClassID='ALL')"; //Check if there is a subject in the PeriodTime and PeriodDay
+			$result = mysql_query($SQLCheck);
+   	$num_rows = mysql_num_rows($result);
+   	$SQLGetPrioritySubject = "SELECT * FROM assignment WHERE SubjectID='$PrioritySubject' AND ClassID='$ClassID'";
+   		$GetPrioritySubjectResult = mysql_query($SQLGetPrioritySubject);	
+		while($db_field=mysql_fetch_assoc($GetPrioritySubjectResult)) {
+			$TeacherOne=$db_field['TeacherID'];   						
+   	}
+   	
+		$CheckPeriodTimeTeacher = "SELECT * FROM periodassignment WHERE PeriodTime='$PeriodTime' AND PeriodDay='$PeriodDay' AND TeacherID='$TeacherOne'";	 
+   		$FirstTeacherTimeResult = mysql_query($CheckPeriodTimeTeacher);
+		$FirstTeacherRowCheck = mysql_num_rows($FirstTeacherTimeResult);	
+		if($FirstTeacherRowCheck==0) {
+   		if($num_rows>0) {
+						$OverlapError="There is already a subject at Day ".$PeriodDay." during Period ".$PeriodTime;	
+     		}					
+     		else {
+     			$num_rows2=0;
+     			$time=$PeriodTime;
+				$PeriodTest=$PeriodTime+$DayPeriods;				
+				
+				 while (($num_rows2 == 0) && ($time<$DayPeriods+$PeriodTime)){
+					$SQLCheck = "SELECT * FROM periodassignment WHERE (PeriodTime = '$time' AND PeriodDay='$PeriodDay' AND ClassID='$ClassID') OR (PeriodTime = '$time' AND PeriodDay='$PeriodDay' AND ClassID='ALL')"; //Check if there is a subject in the PeriodTime and PeriodDay
+						$result = mysql_query($SQLCheck);
+   					$num_rows2 = mysql_num_rows($result);	
+						$time=$time+1;		
+				}
+				if($num_rows2==0) {	
+				$SQLPeriodCheck = "SELECT * FROM periodassignment WHERE SubjectID='$PrioritySubject' AND ClassID='$ClassID'"; //Check if there is a subject in the PeriodTime and PeriodDay
+					$result = mysql_query($SQLPeriodCheck);
+   				$num_rows = mysql_num_rows($result);
+   				if($num_rows < $Periods) {
+   					if(($DayPeriods+$num_rows)<=$Periods) {
+     						$PeriodTest=$PeriodTime+$DayPeriods;
+
+								for($x=$PeriodTime;$x<$PeriodTest;$x++) {   			
+   								$SQLGetPrioritySubject = "SELECT * FROM assignment WHERE SubjectID='$PrioritySubject' AND ClassID='$ClassID'";
+   									$GetPrioritySubjectResult = mysql_query($SQLGetPrioritySubject);	
+	
+   							while($db_field=mysql_fetch_assoc($GetPrioritySubjectResult)) {
+									$TeacherOne=$db_field['TeacherID'];   						
+   							}
+
+
+								$SQLWritePrioritySubject = "INSERT INTO periodassignment (SubjectID,ClassID,TeacherID,PeriodTime,PeriodDay)
+      							VALUES ('$PrioritySubject','$ClassID','$TeacherOne','$x','$PeriodDay')";        
+      							$result = mysql_query($SQLWritePrioritySubject);      					
+				}
+
+					} 
+					else {
+						$ErrorMessage='Subject has reached its maximum number of periods';
+					}
+		
+				} else {
+				$ErrorMessage='Subject has reached its maximum number of periods';				
+					}
+
+			}
+			else {
+					$ErrorMessage='There is a subject overlapping';		
+			}
+		}
+	}else {
+					$ErrorMessage=$TeacherOne." has another class";		
+	}
+?>
+<html>
+<body>
+  <link href="MyStyle.css" type="text/css"
+ rel="stylesheet">
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Choose a Period Time and Day for Physical Education</title>
+</head>
+<body>
+	<ul>	
+ 		<li2>
+ 			<img src="logo.png" height="46" width="40">
+  		</li2>
+  		<li><a href="home.php">Home</a></li>
+  		<li><a href="InsertionMenu.php">Data Insertion</a></li>
+		<li><a href="assignement.php">Teacher Assignment</a></li> 		
+ 		<li><a class="active" href="ScheduleGeneration.php">Generate Schedule</a></li>
+  		<li><a href="#contact">Contact</a></li>
+
+	<ul style="float: right; list-style-type: none;">
+		<li>
+			<a href="#about">About</a></li>
+		<li>
+			<a href="#login">Login</a></li>
+		</ul>
+	</ul>
+<div style="text-align: center; font-family: Arial;">
+<h1>Generate Schedule</h1>
+<table
+ style="width: 100%; height: 516px;"
+ background="tablebackground.png" border="1"
+ cellpadding="0" cellspacing="0">
+<tr>
+	<td>
+	<center>
+		<h2>Choose a Period Time and Day for Physical Education</h2>	
+<table style="height: 20px;" align="center" bgcolor="#FFFFFF">	
+<form action="PrioritySubjects4.php" method="post">
+	<tr>	
+		<td>
+			Parallel Subject:
+		</td>	
+		<td>
+			PHE
+		</td>
+		<td>
+			<font color="red"><?php echo $OverlapError.' '.$ErrorMessage; ?></font>		
+		</td>		
+	</tr>		
+			<td>			
+			Period Time:
+			</td>
+			<td><select name='PeriodTime'>
+			
+   	 				<option value="1">1</option>
+   	 				<option value="2">2</option>
+   	 				<option value="3">3</option>
+   	 				<option value="4">4</option>
+   	 				<option value="5">5</option>
+   	 				<option value="6">6</option>
+   	 				<option value="7">7</option>
+   	 				<option value="8">8</option>
+   	 				<option value="9">9</option>
+   	 				<option value="10">10</option>
+   	 				<option value="11">11</option>
+   	 				<option value="12">12</option>
+   	 				<option value="13">13</option>
+   	 				<option value="14">14</option>
+
+			</select>
+			</td>
+		</tr>	
+	<tr>
+			<td>		
+				Day:
+			</td>
+			<td>
+				<select name='PeriodDay'>
+					   <option value="1">Monday</option>
+					   <option value="2">Tuesday</option>
+					   <option value="3">Wednesday</option>
+					   <option value="4">Thursday</option>
+					   <option value="5">Friday</option>
+			</select>
+			</td>
+	</tr>
+			<tr>
+<td>		Periods:</td><td><select name='Periods'>
+					   <option value="1">1</option>
+					   <option value="2">2</option>
+					   <option value="3">3</option>
+					   <option value="4">4</option>
+					   <option value="5">5</option>
+					   
+			</select></td>
+			</tr>
+<tr>
+	<td>
+		<input type="hidden" name="PrioritySubject" value="PHE">
+		<input type="submit" value="Submit">
+	</td>
+	<?php 
+   						$RowsGet = "SELECT * FROM periodassignment WHERE ClassID='$ClassID' AND SubjectID='$PrioritySubject'";
+								$RowsGetResult = mysql_query($RowsGet); 			
+							$num_rows3 = mysql_num_rows($RowsGetResult);		//check number of the parallel subject exist
+		if($num_rows3==$Periods) {
+	 ?>
+	<td>
+		<a href="PrioritySubjectMenu.php"><button type="button">Done</button></a>
+	</td>
+	<?php 
+		} 
+	?>
+	
+	
+</tr>
+</table>
+</table>
+</form>
+<h2><center><?php echo $ClassID.' ' ?>Schedule</center></h2>
+<table border="1" cellpadding="0" style="border-spacing: 0px; height: 40%; width: 80%;" align="center" bgcolor="#FFFFFF">
+	<?php
+				for ($x=1;$x<17;$x++) { //Store subjects in array TimeTable
+     				for($y=1;$y<6;$y++){
+   					$SQLGetSubject = "SELECT * FROM periodassignment WHERE (ClassID = '$ClassID' AND PeriodTime = '$x' AND PeriodDay = '$y' OR ClassID='ALL' OR TeacherID='ALL') ";
+							$GetSubjectResult = mysql_query($SQLGetSubject); 
+						while($db_field=mysql_fetch_assoc($GetSubjectResult)) {
+								$TimeTable[$db_field["PeriodTime"]][$db_field["PeriodDay"]]=$db_field["SubjectID"].'-'.$db_field['TeacherID'];								
+						}   					      
+               }
+            }
+				for ($x=1;$x<17;$x++) { //Store parallel subjects in array TimeTable
+     				for($y=1;$y<6;$y++){            
+   						$SQLGetPeriodMergedSubject = "SELECT * FROM periodassignment WHERE (ClassID = '$ClassID' AND PeriodTime='$x' AND PeriodDay='$y') ";
+								$GetPeriodMergedSubjectResult = mysql_query($SQLGetPeriodMergedSubject); 			
+							$num_rows = mysql_num_rows($GetPeriodMergedSubjectResult);	
+							if($num_rows>1) {
+   							$SQLGetSubject = "SELECT * FROM periodassignment WHERE (ClassID = '$ClassID' AND PeriodTime = '$x' AND PeriodDay = '$y') ";
+									$GetSubjectResult = mysql_query($SQLGetSubject); 															
+									$TimeTable[$x][$y]='';								
+								while($db_field=mysql_fetch_assoc($GetSubjectResult)){
+									if($TimeTable[$x][$y]=="") {
+										$TimeTable[$x][$y]=$db_field["SubjectID"];
+									}else{
+									$TimeTable[$x][$y]=$TimeTable[$x][$y].'-'.$db_field["SubjectID"];
+									}
+								}
+   							$SQLGetTeacher = "SELECT * FROM periodassignment WHERE (ClassID = '$ClassID' AND PeriodTime = '$x' AND PeriodDay = '$y') ";
+									$GetTeacherResult = mysql_query($SQLGetTeacher); 	
+								while($db_field=mysql_fetch_assoc($GetTeacherResult)){
+									$TimeTable[$x][$y]=$TimeTable[$x][$y].'-'.$db_field["TeacherID"];
+								}									
+															
+							}								
+						}
+					}															
+					 
+		echo "<tr><td>".$ClassID."</td>";
+		echo "<td>Mon</td><td>Tue</td><td>Wed</td><td>Thu</td><td>Fri</td>";
+		echo "<tr><td></td><td>Assembly</td></tr>";
+		echo "<tr>";
+		for($time=1;$time<5;$time++) {
+			echo "<td>".$time."</td>";
+			for($day=1;$day<6;$day++){
+				echo "<td>".$TimeTable[$time][$day]."</td>";
+			}
+			echo "</tr>";
+		}
+		echo "<tr><td></td><td>Break</td></tr>";
+		for($time=5;$time<9;$time++){
+			echo "<tr><td>".$time."</td>";	
+			for($day=1;$day<6;$day++){
+				echo "<td>".$TimeTable[$time][$day]."</td>";
+			}
+			echo "</tr>";
+		}
+		echo "<tr><td></td><td>Lunch</td></tr>";
+		for($time=9;$time<16;$time++){
+			echo "<tr><td>".$time."</td>";	
+			for($day=1;$day<6;$day++){
+				echo "<td>".$TimeTable[$time][$day]."</td>";
+			}
+			echo "</tr>";
+		}
+	?>
+</table>
+	
+	</body>
+</html>		

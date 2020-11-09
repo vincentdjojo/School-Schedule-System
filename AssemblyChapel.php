@@ -1,0 +1,156 @@
+<?php
+		$user_name = "root";
+		$pass_word = "";
+		$database = "schoolschedule";
+		$server = "127.0.0.1";
+
+
+		
+		$db_handle = mysql_connect($server,$user_name,$pass_word);
+		$db_found = mysql_select_db($database,$db_handle);
+	
+		$InitializeAssignmentTable = "TRUNCATE TABLE periodassignment";
+			$InitializeAssignmentTableResult = mysql_query($InitializeAssignmentTable);
+
+		$InitializeAssembly = "DELETE from periodassignment WHERE SubjectID='ASS'";
+			$InitializeAssemblyResult = mysql_query($InitializeAssembly);
+		$InitializeAssembly2 = "DELETE from assignment WHERE SubjectID='ASS'";
+			$InitializeAssemblyResult2 = mysql_query($InitializeAssembly2);  
+		$InitializeChapel2 = "DELETE from assignment WHERE SubjectID='CPL'";
+			$InitializeChapelResult2 = mysql_query($InitializeChapel2);
+		$InitializeChapel = "DELETE from periodassignment WHERE SubjectID='CPL'";
+			$InitializeChapelResult = mysql_query($InitializeChapel);
+		//$InitializeMergeInfo = "UPDATE assignment SET MergeInfo='' WHERE MergeInfo!=''";
+			//$InitializeMergeInfoResult = mysql_query($InitializeMergeInfo);
+
+?>
+
+<center>
+<html>
+<body>
+  <link href="MyStyle.css" type="text/css"
+ rel="stylesheet">
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Choose a Period Time and Day for Assembly</title>
+</head>
+<body>
+	<ul>	
+ 		<li2>
+ 			<img src="logo.png" height="46" width="40">
+  		</li2>
+  		<li><a href="home.php">Home</a></li>
+  		<li><a href="InsertionMenu.php">Data Insertion</a></li>
+		<li><a  href="assignement.php">Teacher Assignment</a></li> 
+		<li><a href="selectclassparallelsubject.php">Parallel Subject Assignment</a></li>			
+		<li><a class="active" href="ScheduleGeneration.php">Generate Schedule</a></li>
+ 		<li><a href="search.php">Search Schedule</a></li>
+  		<li><a href="contact.php">Contact</a></li>
+
+	<ul style="float: right; list-style-type: none;">
+		<li>
+			<a href="about.php">About</a></li>
+		<li>
+			<a  href="login.php"><?php if(@$_SESSION['login']==1) {
+																	 echo @$_SESSION['UserName'];
+																	}else {
+																		echo 'Login';	
+																	} ?></a></li>
+		</ul>
+	</ul>
+<div style="text-align: center; font-family: Arial;">
+<h1>Choose a Period Time and Day for Assembly</h1>
+<div style="text-align: center; font-family: Arial; font-size:100%; ">
+<table style="width: 100%; height: 516px; text-align: left; margin-left: auto; margin-right: auto;" background="tablebackground.png" border="1" cellpadding="0" cellspacing="0">
+
+	<tr>
+		<td>
+			<table style="width:25%; height:516px;" background="backgroundforcontact.png" border="0" cellpadding="0" align='center'>
+				<tr>
+					<td align='center'>
+					<img src="assembly.png"><img src="baka2.png" alt="" width="162" height="224">
+					<table background="backgroundforcontact2.png" style="background-size: 100% 100%; width:80%; height:249px;">
+						<tr>
+							<td align='center'>
+								<table background="backgroundforcontact3.png "style="background-size: 100% 100%";>
+									<tr>
+										<td align='center'>									
+											
+												<img src="575346.gif" width="68" height="76">
+											<table background="backgroundforcontact4.png "style="background-size: 100% 100%; font-size:90%;";>
+												<tr>
+													<td align='center'>
+<table style="height: 20px;" align="center" bgcolor="">
+<form action="AssemblyChapel2.php" method="post">
+	<tr>	
+		<td>
+			Subject:
+		</td>	
+		<td>
+			Assembly
+		</td>		
+	</tr>
+	<tr>
+		<td colspan="2">
+		</td>	
+	</tr>
+	<tr>			
+		<td>			
+			Period Time:
+		</td>
+		<td>
+			<select name='PeriodTime'>
+						<option value="1">1</option>
+   	 				<option value="2">2</option>
+   	 				<option value="3">3</option>
+   	 				<option value="4">4</option>
+   	 				<option value="5">5</option>
+   	 				<option value="6">6</option>
+   	 				<option value="7">7</option>
+   	 				<option value="8">8</option>
+   	 				<option value="9">9</option>
+   	 				<option value="10">10</option>
+   	 				<option value="11">11</option>
+   	 				<option value="12">12</option>
+			</select>
+		</td>
+	</tr>	
+	<tr>
+		<td>
+			Day:
+		</td>
+		<td>
+			<select name='PeriodDay'>
+					   <option value="1">Monday</option>
+					   <option value="2">Tuesday</option>
+					   <option value="3">Wednesday</option>
+					   <option value="4">Thursday</option>
+					   <option value="5">Friday</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<input type="hidden" name="PrioritySubject" value="ASS">
+			<input type="submit" value="Submit">
+													</td>
+												</tr>
+											</table>
+							
+										</td>
+									</tr>								
+								</table>							
+							</td>
+						</tr>
+					</table>
+					</td>				
+				</tr>
+			</table>	
+		</td>
+		</form>
+		</td>
+	</tr>
+</table>
+</table>
+</center>
+</form>

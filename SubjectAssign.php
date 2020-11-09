@@ -1,0 +1,220 @@
+<html>
+<body>
+<?php
+
+
+	$user_name = "root";
+	$pass_word = "";
+	$database = "schoolschedule";
+	$server = "127.0.0.1";
+		
+	$db_handle = mysql_connect($server,$user_name,$pass_word);
+	$db_found = mysql_select_db($database,$db_handle);	
+
+		$SQLparallelsubject = "SELECT * FROM subject WHERE Category = 'p'";
+		$parallelsubjectresult=mysql_query($SQLparallelsubject);
+		
+		$SQLparallelclass = "SELECT * FROM class";
+		$parallelclassresult=mysql_query($SQLparallelclass);
+		
+		$SQLparallelteacher = "SELECT * FROM teacher";
+		$parallelteacherresult=mysql_query($SQLparallelteacher);
+		
+		$SQLparallelday = "SELECT * FROM assignment";
+		$paralleldayresult = mysql_query($SQLparallelday);
+		
+		//initialize ClassArray
+?>
+				
+	<form action="SubjectAssign2.php" method="post">
+	<center><table>
+		<tr>			
+			<td>			
+			Class:
+			</td><td><select name='ClassID'>
+			<?php
+   	 		while ($row = mysql_fetch_assoc($parallelclassresult)) {
+   	 			?>
+   	 				
+   					<option value="<?php echo $row['ClassID'];?>"><?php echo $row['ClassID'];?></option>
+<?php				
+				} ?>
+			</select></td></tr></br>	
+		<tr>			
+			<td>			
+			Parallel Subject:
+			</td><td><select name='SubjectID'>
+			<?php
+   	 			while ($row = mysql_fetch_assoc($parallelsubjectresult)) {
+   	 				?>
+   	 				
+   					<option value="<?php echo $row['SubjectID'];?>"><?php echo $row['SubjectID'];?></option>
+<?php				
+				} ?>
+			</select></td></tr></br>
+		<tr>			
+			<td>			
+			Period Time:
+			</td><td><select name='PeriodTime'>
+			
+   	 				<option value="1">1</option>
+   	 				<option value="2">2</option>
+   	 				<option value="3">3</option>
+   	 				<option value="4">4</option>
+   	 				<option value="5">5</option>
+   	 				<option value="6">6</option>
+   	 				<option value="7">7</option>
+   	 				<option value="8">8</option>
+   	 				<option value="9">9</option>
+   	 				<option value="10">10</option>
+   	 				<option value="11">11</option>
+   	 				<option value="12">12</option>
+
+			</select></td></tr></br>
+			<tr>
+<td>		Day:</td><td><select name='PeriodDay'>
+					   <option value="1">Monday</option>
+					   <option value="2">Tuesday</option>
+					   <option value="3">Wednesday</option>
+					   <option value="4">Thursday</option>
+					   <option value="5">Friday</option>
+			</select></td>
+			</tr>
+			<tr><td><input type="submit" value="Submit"></td> <td><a href="SubjectAssign.php"><button type="button">Done</button></a></td></tr></table></center>
+	</form>
+	<center><table width="100%" border="1" cellpadding="0" style="border-spacing: 0px;" >
+  <tr>
+    <th></th>
+    <th>Mon</th>
+    <th>Tue</th>
+    <th>Wed</th>
+    <th>Thu</th>
+    <th>Fri</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="5" align="center">Assembly</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="5" align="center">Break</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td colspan="5" align="center">Lunch</td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>11</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+    <tr>
+    <td>12</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+    <tr>
+    <td>13</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+    <tr>
+    <td>14</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table></center>
+</body>
+</html>
